@@ -1,0 +1,43 @@
+<div class="row">
+	<div class="col-12">
+		<div class="card">
+			<div class="card-header">
+				<div class="float-start">
+					<h4 class="card-title">
+						<i class="fas fa-table"></i>
+						{{titles}}
+					</h4>
+				</div>
+				<div class="float-end">
+					<a href="{{addUrl}}" class="btn btn-small btn-primary">
+						Add {{title}}
+					</a>
+				</div>
+			</div><!--end card-header-->
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table simple-datatable">
+						<thead class="thead-light">
+							{{! -- For more advanced tables, use headings rather than columns --}}
+							{{#headings}}
+								<th {{#class}}class="{{.}}"{{/class}}>
+									{{label}}
+								</th>
+							{{/headings}}
+							</tr>
+						</thead>
+						<tbody>
+							{{#data}}
+							<tr>
+								{{#.}}
+								<td>{{{ . }}}</td>
+								{{/.}}
+							</tr>
+							{{/data}}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,14 @@
+<div>
+    <a class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-ellipsis-h"></i>
+    </a>
+    <ul class="dropdown-menu">
+    {{#actions}}
+        <li>
+            <a class="dropdown-item" href="{{url}}">
+                <i class="{{icon}}"></i> {{title}} {{label}}
+            </a>
+        </li>
+    {{/actions}}
+    </ul>
+</div>

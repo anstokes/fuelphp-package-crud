@@ -1,0 +1,17 @@
+{
+	"name": "anstech-fuelphp/crud",
+	"description" : "FuelPHP 1.x ANSTECH CRUD Package",
+	"type": "fuel-package",
+	"homepage": "https://anstech.co.uk",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Adrian Stokes",
+			"email": "adrian@anstech.co.uk"
+		}
+	],
+	"require": {
+		"php": ">=5.4",
+		"composer/installers": "~1.0"
+	}
+}

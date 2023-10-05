@@ -1,0 +1,136 @@
+{{#hasHistory}}
+<div id="historyModal"></div>
+{{/hasHistory}}
+
+<!-- Alerts for CRUD API operations -->
+<div id="crudAlerts" class="row"></div>
+
+<!-- CRUD form container -->
+<div class="row">
+	<div class="card">
+		<div class="d-flex flex-row justify-content-between card-header">
+			<h4 class="card-title">
+				<span class="fw-normal text-muted">
+					<i class="fas fa-edit"></i>
+					Edit {{title}}:
+				</span>
+				{{label}}
+			</h4>
+			
+			{{#hasHistory}}
+			<button type="button" class="btn btn-info" onclick="getChangeHistory('{{type}}', {{id}});">						
+				<i class="fas fa-history me-1"></i> History
+			</button>
+			{{/hasHistory}}
+		</div>
+		<div class="card-body">
+			<!-- Object ID required for API -->
+			<input type="hidden" id="form_id" name="id" value="{{id}}" />
+			{{{ form }}}
+		</div>
+		<div class="card-footer d-flex justify-content-center">
+			<button type="button" class="btn btn-small btn-success" onclick="save();">
+				<i class="famicon famicon-save"></i>
+				Save {{title}}
+			</button>
+		</div>		
+	</div>
+</div>
+<!-- end CRUD form container -->
+
+<!-- CRUD scripts -->
+<script>
+	function initialise() {
+		// Initialise controls on form
+		initialiseSelectr();
+	}
+	
+	function crudConfiguration(stringify) {
+		// Fetch configuration data and convert to JSON object
+		const configuration = $('#configuration').toObject({mode: 'all'})[0];
+		// console.log('Configuration: ', configuration);
+		if (stringify) {
+			return JSON.stringify(configuration);
+		}
+		return configuration;
+	}
+	
+	function save() {
+		const id = $('#form_id').val();
+		
+		// Default is update (PATCH)
+		let requestType = 'PATCH';
+		switch (id) {
+			case 'new':
+				// New is POST
+				requestType = 'POST';
+			break;
+			
+			default:
+				// Use default
+			break;
+		}
+		
+		// Make API call
+		$.ajax({
+			type: requestType,
+			url: `/api/{{objectType}}/${id}`,
+			data: crudConfiguration(true),
+			dataType: 'json',
+			success: function(data, status, xhr) {
+				// console.log(xhr.status);
+				refreshForm(data);
+				successMessage();
+			},
+			error: function(data) {
+				// console.log(data);
+				const json = JSON.parse(data.responseText);
+				errorMessage(json);					
+			},
+		});
+	}
+	
+	function successMessage() {
+		// Success alert
+		$('#crudAlerts')
+			.html(
+				`<div class="alert alert-success">
+					<i class="fas fa-check-circle me-2"></i> {{title}} saved successfully
+				</div>`
+			)
+			.slideDown(200)
+			.delay(3000)
+			.slideUp(200, () => $('#crudAlerts .alert').remove());
+	}
+	
+	function errorMessage({message}) {
+		// Error alert
+		$('#crudAlerts')
+			.html(
+				`<div class="alert alert-danger">
+					<i class="fas fa-exclamation-triangle me-2"></i> Unable to save {{title}}:
+					<ul class="mt-2">
+						<li>${message}</li>
+					</ul>
+				</div>`
+			)
+			.slideDown(200);
+	}
+	
+	function refreshForm(data) {
+		if (data) {
+			// Update values on form
+			Object.keys(data).forEach((index) => {
+				const value = data[index];
+				$(`#form_${index}`).val(value);
+			});
+		}
+	}
+
+	// Wait for libraries to load
+	$(document).ready(function() {
+		// Initialise
+		initialise();
+	});
+</script>
+<!-- end CRUD scripts -->

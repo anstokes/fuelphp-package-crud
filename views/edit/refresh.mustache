@@ -1,0 +1,67 @@
+{{#hasHistory}}
+<div id="historyModal"></div>
+{{/hasHistory}}
+
+<div class="row">
+	<div class="card">
+		<div class="d-flex flex-row justify-content-between card-header">
+			<h4 class="card-title">
+				<span class="fw-normal text-muted">
+					<i class="fas fa-edit"></i>
+					Edit {{description}}:
+				</span>
+				{{label}}
+			</h4>
+			
+			{{#hasHistory}}
+			<button type="button" class="btn btn-info" onclick="getChangeHistory('{{type}}', {{id}});">						
+				<i class="fas fa-history me-1"></i> History
+			</button>
+			{{/hasHistory}}
+		</div>
+		<div class="card-body">
+			{{{ form }}}
+		</div>
+		<div class="card-footer d-flex justify-content-center">
+			<button type="button" class="btn btn-small btn-success" onclick="save();">
+				<i class="famicon famicon-save"></i>
+				Save {{description}}
+			</button>
+		</div>		
+	</div>
+</div>
+<script>
+	function crudConfiguration() {
+		// Fetch configuration data and convert to JSON object
+		const configuration = $('#configuration').toObject({mode: 'all'})[0];
+		// console.log('Configuration: ', configuration);
+		return configuration;
+	}
+
+	function initialise() {
+		// Initialise controls on form
+		initialiseSelectr();
+	}
+	
+	function refresh() {
+		// Refresh the configuration, without saving changes
+		$("#configuration").load("{{url}} #refreshConfiguration", { configuration: crudConfiguration() }, function() {
+			// console.log ("Refreshed view");
+			initialise();
+		});
+	}
+
+	function save() {
+		// Save the configuration and refresh the display
+		$("#configuration").load("{{url}} #refreshConfiguration", { configuration: crudConfiguration(), save: true }, function() {
+			// console.log ("Saved configuration");
+			initialise();
+		});
+	}
+
+	// Wait for libraries to load
+	$(document).ready(function() {
+		// Initialise page
+		initialise();
+	});
+</script>

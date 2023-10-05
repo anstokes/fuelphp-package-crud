@@ -1,0 +1,63 @@
+<ol class="breadcrumb">
+	<li><a href="#">{{title}}</a> <span class="divider">/</span></li>
+	<li class="active">Configuration</li>
+</ol>
+
+<div class="well">
+	<div class="pull-left">
+		<i class="famicon famicon-plugin"></i>Configure <span class="muted">{{title}}</span>
+	</div>
+	<div class="clearfix"></div>
+	<div class="row-fluid" style="padding-bottom: 10px;">
+		<hr />
+	</div>	
+	<script>
+		$(document).ready(function() {
+			{{#url}}
+				// Change button bindings
+				TableTools.BUTTONS.editor_create.fnClick = function ( nButton, oConfig ) {
+						//console.log('Create object...');
+						window.location.assign("{{url}}/configure/new");		
+					};
+				TableTools.BUTTONS.editor_edit.fnClick = function ( nButton, oConfig ) {
+						selectedRows = this.fnGetSelectedData();
+						if (selectedRows.length) {
+							selectedId = selectedRows[0].DT_RowId.substring(4);
+							//console.log('Edit object: ' + selectedId);
+							window.location.assign("{{url}}/configure/" + selectedId);
+						}
+					};
+			{{/url}}
+			/*
+			TableTools.BUTTONS.clone = $.extend( {}, TableTools.buttonBase, {
+				"sButtonClass": "DTTT_button",
+				"sButtonText": "Copy<i class='famicon famicon-copy' style='position: relative; bottom: 1px; left: 5px;'></i>",
+				"sFieldBoundary": '"',
+				"sFieldSeperator": ",",
+				"fnClick": function( nButton, oConfig ) {
+					selectedRows = this.fnGetSelectedData();
+					if ( this.fnGetSelected().length == 1 ) {
+						selectedId = selectedRows[0].DT_RowId.substring(4);
+						//console.log('Copy object: ' + selectedId);
+						cloneModel('component', selectedId, 'dtComponents.fnStandingRedraw()');
+					}
+				},
+				"fnSelect": function( nButton, oConfig ) {
+					var iSelected = this.fnGetSelected().length;
+					if ( iSelected == 1 ) {
+						$(nButton).removeClass( this.classes.buttons.disabled );
+					} else {
+						$(nButton).addClass( this.classes.buttons.disabled );
+					}
+				},
+				"fnInit": function( nButton, oConfig ) {
+					$(nButton).addClass( this.classes.buttons.disabled );
+				}		
+			});
+			*/
+		});
+	</script>
+	{{{ html }}}
+	{{{ javascript }}}
+	<div class="clearfix"></div>
+</div>

@@ -7,33 +7,35 @@
 
 <!-- CRUD form container -->
 <div class="row">
-	<div class="card">
-		<div class="d-flex flex-row justify-content-between card-header">
-			<h4 class="card-title">
-				<span class="fw-normal text-muted">
-					<i class="fas fa-edit"></i>
-					Edit {{title}}:
-				</span>
-				{{label}}
-			</h4>
-			
-			{{#hasHistory}}
-			<button type="button" class="btn btn-info" onclick="getChangeHistory('{{type}}', {{id}});">						
-				<i class="fas fa-history me-1"></i> History
-			</button>
-			{{/hasHistory}}
+	<div class="col-12">
+		<div class="card">
+			<div class="d-flex flex-row justify-content-between card-header">
+				<h4 class="card-title">
+					<span class="fw-normal text-muted">
+						<i class="fas fa-edit"></i>
+						Edit {{title}}:
+					</span>
+					{{label}}
+				</h4>
+				
+				{{#hasHistory}}
+				<button type="button" class="btn btn-info" onclick="getChangeHistory('{{type}}', {{id}});">						
+					<i class="fas fa-history me-1"></i> History
+				</button>
+				{{/hasHistory}}
+			</div>
+			<div class="card-body">
+				<!-- Object ID required for API -->
+				<input type="hidden" id="form_id" name="id" value="{{id}}" />
+				{{{ form }}}
+			</div>
+			<div class="card-footer d-flex justify-content-center">
+				<button type="button" class="btn btn-small btn-success" onclick="save();">
+					<i class="famicon famicon-save"></i>
+					Save {{title}}
+				</button>
+			</div>		
 		</div>
-		<div class="card-body">
-			<!-- Object ID required for API -->
-			<input type="hidden" id="form_id" name="id" value="{{id}}" />
-			{{{ form }}}
-		</div>
-		<div class="card-footer d-flex justify-content-center">
-			<button type="button" class="btn btn-small btn-success" onclick="save();">
-				<i class="famicon famicon-save"></i>
-				Save {{title}}
-			</button>
-		</div>		
 	</div>
 </div>
 <!-- end CRUD form container -->

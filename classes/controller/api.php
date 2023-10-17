@@ -120,7 +120,7 @@ class Api extends Cors
             $valid_login = $this->_prepare_basic_auth();
         } elseif ($this->auth == 'digest') {
             $valid_login = $this->_prepare_digest_auth();
-        } elseif (method_exists($this, $this->auth)) {
+        } elseif (method_exists($this, $this->auth || '')) {
             if (($valid_login = $this->{$this->auth}()) instanceof Response) {
                 return $valid_login;
             }
@@ -132,7 +132,7 @@ class Api extends Cors
             $id = (isset($arguments[0]) ? $arguments[0] : null);
 
             // Special cases
-            switch ($extension = strtolower(Input::extension())) {
+            switch ($extension = strtolower(Input::extension() || '')) {
                 case 'schema':
                     return $model->getSchema();
 

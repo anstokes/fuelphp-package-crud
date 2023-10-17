@@ -342,8 +342,8 @@ trait Crud
         ];
 
         // Update Breadcrumb
-        if (Package::loaded('anstech-template')) {
-            \Anstech\Breadcrumb::pop();
+        if (Package::loaded('template')) {
+            \Anstech\Breadcrumb::set($object->getTitle(true), Uri::base() . implode('/', $segments));
             \Anstech\Breadcrumb::set($object->isNew() ? 'New ' . $object->getTitle() : $object->getLabel());
         }
 

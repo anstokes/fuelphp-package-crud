@@ -1,6 +1,6 @@
 <?php
 
-namespace Anstech\Crud\Model;
+namespace Anstech\Crud\Trait;
 
 use Fuel\Core\Arr;
 use Fuel\Core\Inflector;

@@ -2,6 +2,8 @@
 
 namespace Anstech\Crud\FieldTypes\Required;
 
+use Anstech\Crud\FieldTypes\Trait\Required;
+
 class StringType extends \Anstech\Crud\FieldTypes\StringType
 {
     use Required;

@@ -315,13 +315,13 @@ class Base
                 $value = [];
                 foreach ($object->{$field} as $related_object) {
                     $value[] = [
-                        'iri' => $related_object->getIri(),
+                        'iri'   => $related_object->getIri(),
                         'label' => $related_object->getLabel(),
                     ];
                 }
             } else {
                 $value = [
-                    'iri' => $object->{$field}->getIri(),
+                    'iri'   => $object->{$field}->getIri(),
                     'label' => $object->{$field}->getLabel(),
                 ];
             }

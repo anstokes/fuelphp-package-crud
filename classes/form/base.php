@@ -214,8 +214,9 @@ class Base
         $fieldset->populate($object);
 
         return View::forge('form/basic.mustache', [
-            'alerts' => static::alerts($saved, $errors),
-            'tabs'   => $this->tabs($object, $fieldset, $tabs),
+            'alerts'  => static::alerts($saved, $errors),
+            'hasTabs' => count($tabs) > 1 ? true : false,
+            'tabs'    => $this->tabs($object, $fieldset, $tabs),
         ], false);
     }
 

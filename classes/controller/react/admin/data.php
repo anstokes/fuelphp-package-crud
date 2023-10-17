@@ -2,6 +2,7 @@
 
 namespace Anstech\Crud\Controller\React\Admin;
 
+use Anstech\Crud\Rest;
 use Anstech\Rest\Controller\Cors;
 use Fuel\Core\Config;
 use Fuel\Core\Format;
@@ -47,19 +48,18 @@ class Data extends Cors
         }
     }
 
-
     public function router($resource, $arguments)
     {
         // Check for CORS Preflight request
         if (Request::active()->get_method() == 'OPTIONS') {
-            return $this->cors_preflight();
+            return $this->corsPreflight();
         }
 
         // Read REST configuration
         Config::load('rest', true);
 
         // Parse argument in case they contain the model/resource (e.g. vehicle/colour -> vehicle_colour)
-        $this->parse_arguments($resource, $arguments);
+        $this->parseArguments($resource, $arguments);
 
         // Check that resource exists
         if (! $model = Rest::forge($resource, get_called_class())) {
@@ -96,7 +96,7 @@ class Data extends Cors
             // Special cases
             switch ($extension = strtolower(Input::extension())) {
                 case 'schema':
-                    return $model->get_schema();
+                    return $model->getSchema();
 
                 case '':
                     // Do nothing
@@ -104,7 +104,7 @@ class Data extends Cors
 
                 default:
                     // List of field values
-                    list($rows, $total_count) = $model->field_values($extension);
+                    list($rows, $total_count) = $model->fieldValues($extension);
                     $this->response->set_header('Access-Control-Expose-Headers', 'x-total-count');
                     $this->response->set_header('x-total-count', $total_count);
                     return $rows;
@@ -116,18 +116,18 @@ class Data extends Cors
                     // Get one/many
                     if ($id) {
                         // Get one
-                        return $model->get_one($id, $this->input_data());
+                        return $model->getOne($id, $this->inputData());
                     }
 
                     // Get many
-                    list($rows, $total_count) = $model->get_many($this->input_data());
+                    list($rows, $total_count) = $model->getMany($this->inputData());
                     $this->response->set_header('Access-Control-Expose-Headers', 'x-total-count');
                     $this->response->set_header('x-total-count', $total_count);
                     return $rows;
 
                 case 'post':
                     // Create one
-                    list($updated, $data) = $model->create_one();
+                    list($updated, $data) = $model->createOne($this->inputData());
                     if ($updated) {
                         return $this->response($data);
                     }
@@ -135,7 +135,7 @@ class Data extends Cors
 
                 case 'put':
                     // Update one
-                    list($updated, $data) = $model->update_one($id, $this->input_data());
+                    list($updated, $data) = $model->updateOne($id, $this->inputData());
                     if ($updated) {
                         return $this->response($data);
                     }
@@ -143,7 +143,7 @@ class Data extends Cors
 
                 case 'delete':
                     // Delete one
-                    list($deleted, $data) = $model->delete_one($id);
+                    list($deleted, $data) = $model->deleteOne($id);
                     if ($deleted) {
                         return $this->response($data);
                     }

@@ -1,3 +1,4 @@
+{{#hasTabs}}
 <!-- Tab Titles -->
 <nav>
 	<div id="nav-tab" class="nav nav-tabs">
@@ -5,9 +6,10 @@
 	<a class="nav-link {{#active}}active{{/active}}" data-bs-toggle="tab" href="#{{name}}">
 		{{description}}
 	</a>
-	{{/tabs}}					
+	{{/tabs}}
 	</div>
 </nav>
+{{/hasTabs}}
 
 <div id="configuration">
 	<div id="refreshConfiguration" class="tab-content">
@@ -35,9 +37,9 @@
 
 		<!-- Tab Content -->
 		{{#tabs}}
-		<div id="{{name}}" class="tab-pane {{#active}}active{{/active}}">
+		{{#hasTabs}}<div id="{{name}}" class="tab-pane {{#active}}active{{/active}}">{{/hasTabs}}
 			{{{ content }}}
-		</div>
+		{{#hasTabs}}</div>{{/hasTabs}}
 		{{/tabs}}
 	</div>
 </div>

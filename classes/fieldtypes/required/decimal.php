@@ -2,6 +2,8 @@
 
 namespace Anstech\Crud\FieldTypes\Required;
 
+use Anstech\Crud\FieldTypes\Trait\Required;
+
 class Decimal extends \Anstech\Crud\FieldTypes\Decimal
 {
     use Required;

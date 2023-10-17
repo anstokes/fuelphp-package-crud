@@ -160,9 +160,18 @@ class Rest
 
         // Update fields
         $primary_keys = $object->primary_key();
-        foreach (array_keys($object->properties()) as $field) {
-            if (! in_array($field, $primary_keys) && isset($data[$field])) {
-                $object->{$field} = $data[$field];
+        foreach ($object->properties() as $field => $properties) {
+            if (! in_array($field, $primary_keys)) {
+                if (isset($data[$field])) {
+                    // Update data
+                    $object->{$field} = $data[$field];
+                } else if (
+                    (! isset($properties['null']) || $properties['null'])
+                    && $object->{$field}
+                 ) {
+                    // Clear existing data
+                    $object->{$field} = null;
+                }
             }
         }
 

@@ -6,20 +6,18 @@ use Fuel\Core\Inflector;
 
 class Varchar
 {
-    protected static $length = 255;
-
-    public static function forge($name)
+    public static function forge($name, $length = 255)
     {
         return [
             'data_type'  => 'varchar',
             'label'      => ucwords(Inflector::humanize($name)),
             'null'       => false,
             'validation' => [
-                'max_length' => [static::$length],
+                'max_length' => [$length],
             ],
             'form'       => [
                 'type'      => 'text',
-                'maxlength' => static::$length,
+                'maxlength' => $length,
             ],
         ];
     }

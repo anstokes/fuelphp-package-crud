@@ -143,7 +143,9 @@ class Base
                             $insert_properties = [$relation_name => $related_properties];
 
                             // Check whether to insert after a particular field
-                            $key_from = $this->model->mappedFieldName($relation->key_from[0], 'hydrate');
+                            $key_from = is_callable([$this->model, 'mappedFieldName'])
+                                ? $this->model->mappedFieldName($relation->key_from[0], 'hydrate')
+                                : $relation->key_from[0];
                             if ($add_after = $this->model->relationOptions($relation_name, 'add_after', $key_from)) {
                                 Arr::insert_after_key($properties, $insert_properties, $add_after, true);
                             } else {

@@ -3,12 +3,9 @@
 namespace Anstech\Crud\Table;
 
 use Anstech\Template\Enqueue;
+use Closure;
 use Fuel\Core\Arr;
-use Fuel\Core\Config;
-use Fuel\Core\DB;
-use Fuel\Core\Inflector;
 use Fuel\Core\Uri;
-use App\User;
 use Parser\View;
 
 class Base
@@ -146,7 +143,7 @@ class Base
                             $insert_properties = [$relation_name => $related_properties];
 
                             // Check whether to insert after a particular field
-                            $key_from = $this->model->compatibleFieldName($relation->key_from[0], 'hydrate');
+                            $key_from = $this->model->mappedFieldName($relation->key_from[0], 'hydrate');
                             if ($add_after = $this->model->relationOptions($relation_name, 'add_after', $key_from)) {
                                 Arr::insert_after_key($properties, $insert_properties, $add_after, true);
                             } else {
@@ -241,15 +238,25 @@ class Base
             return static::$crud_actions;
         }
 
+        $objectId = $object->{$this->model::singularPrimaryKey()};
+
         $actions = [];
 
         foreach (static::$crud_actions as $action) {
-            // echo '<pre>'; var_dump($object); exit;
+            //echo '<pre>'; var_dump($object); exit;
             $actions[] = [
-                'icon'  => $action['icon'],
-                'label' => $object->getLabel(),
-                'title' => $action['title'],
-                'url'   => Uri::current() . '/' . ($action['url'] ? $action['url'] . '/' : '') . $object->{$this->model::singularPrimaryKey()},
+                'icon'  => ($this->isCallable(($action['icon'])))
+                    ? $action['icon']($objectId, $object)
+                    : $action['icon'],
+                'label' => (isset($action['label']))
+                    ? ($this->isCallable(($action['label'])) ? $action['label']($object->getLabel(), $object) : $action['label'])
+                    : $object->getLabel(),
+                'title' => ($this->isCallable($action['title']))
+                    ? $action['title']($objectId, $object)
+                    : $action['title'],
+                'url'   => ($this->isCallable($action['url']))
+                    ? $action['url']($objectId, $object)
+                    : Uri::current() . '/' . ($action['url'] ? $action['url'] . '/' : '') . $object->{$this->model::singularPrimaryKey()},
             ];
         }
 
@@ -379,6 +386,28 @@ class Base
         } catch (\Exception $e) {
             return [];
         }
+    }
+
+    /**
+     * Extension of is_callable method to ensure that core php functions are NOT classed as
+     * callable, e.g. copy
+     * @param mixed $method
+     * @return bool
+     */
+    protected function isCallable($method)
+    {
+        // Check if callable
+        if (
+            is_callable($method)
+            && (
+                is_array($method)
+                || $method instanceof Closure
+            )
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function orderBy($objects)

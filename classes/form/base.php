@@ -109,6 +109,17 @@ class Base
         return false;
     }
 
+    public static function moveValueModifiers($fieldset)
+    {
+        foreach ($fieldset->form()->field() as $field) {
+            if (
+                ($field_value_modifiers = $field->get_attribute('value'))
+                && is_array($field_value_modifiers)
+            ) {
+                $field->set_attribute('value.modifiers', $field_value_modifiers);
+            }
+        }
+    }
 
     /**
      * Helper function to process customisations to Fieldset class
@@ -121,21 +132,24 @@ class Base
      */
     public static function helper($fieldset, &$tabs = [], $instance = null)
     {
+        // TODO; allow defaults to be overridden via config
         $form = $fieldset->form();
 
         // Add the csrf token field to the form
         $form->add_csrf();
 
         // Customise the default template
-        $fieldset->set_config('form_template', View::forge('form/basic/form.mustache')->render());
-        $fieldset->set_config('field_template', View::forge('form/basic/fields/default.mustache')->render());
-        $fieldset->set_config('multi_field_template', View::forge('form/basic/fields/multifield.mustache')->render());
+        $fieldset->set_config('form_template', View::forge('form/basic/form.mustache'));
+        $fieldset->set_config('field_template', View::forge('form/basic/fields/default.mustache'));
+        $fieldset->set_config('multi_field_template', View::forge('form/basic/fields/multifield.mustache'));
 
         // Apply valid bootstrap class to inputs & set validation rules to HTML tag rules
         foreach ($form->field() as $field) {
-            if ($field->type === 'text') {
+            if (! in_array($field->type, ['radio'])) {
                 $field->set_attribute('class', $form->get_config('input_class', 'form-control'));
+            }
 
+            if ($field->type === 'text') {
                 foreach ($field->rules as $rule) {
                     if ($value = (int)reset($rule[1])) {
                         $rule[0] === 'max_length' && $field->set_attribute('maxlength', $value);
@@ -145,7 +159,7 @@ class Base
             } elseif ($field->type === 'checkbox') {
                 switch ($field->get_attribute('sub_type')) {
                     case 'switch':
-                        $field->set_template(View::forge('form/basic/switch.mustache')->render());
+                        $field->set_template(View::forge('form/basic/switch.mustache'));
                         break;
 
                     default:
@@ -154,9 +168,26 @@ class Base
                 }
             }
 
+            // Check for field value modifiers
+            if ($field_value_callback = Arr::get($field->get_attribute('value.modifiers', []), 'callback')) {
+                if (is_callable($field_value_callback)) {
+                    // Apply value modifier
+                    $field->set_value(call_user_func($field_value_callback, $field->value), true);
+                }
+                $field->set_attribute('value.modifiers', null);
+            }
+
             // Workaround for lack of description template.  Since we don't want <p></p> to be visible on fields without description
             if (trim($field->description) !== '') {
                 $field->set_description('<p class="help-block">' . $field->description . '</p>');
+            }
+
+            // Check if view(s) are provided by field
+            if ($view = $field->get_attribute('view')) {
+                // Remove the view attribute so as not to expose filtesystem paths
+                $field->set_attribute('view', null);
+                // Set the template on the field
+                $field->set_template(View::forge($view, ['field' => $field], false));
             }
 
             // Group fields into tabs
@@ -206,12 +237,17 @@ class Base
         // Add related field(s)
         static::addRelatedFields($object, $fieldset);
 
-        // Tabbed form
-        $tabs = [];
+        // Move 'value' modifiers; they are under ['value' => ['callback' => {method} ] ]
+        // for consistency with the tables, but would get overwritten by by the population
+        // unless they are moved.
+        static::moveValueModifiers($fieldset);
 
-        // Modify fieldset
-        static::helper($fieldset, $tabs);
+        // Populate the fieldset
         $fieldset->populate($object);
+
+        // Modify fieldset; customise the default templates, add classes, groups, tabs etc.
+        $tabs = [];
+        static::helper($fieldset, $tabs);
 
         return View::forge('form/basic.mustache', [
             'alerts'  => static::alerts($saved, $errors),

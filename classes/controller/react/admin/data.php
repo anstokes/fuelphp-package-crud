@@ -94,9 +94,14 @@ class Data extends Cors
             $id = (isset($arguments[0]) ? $arguments[0] : null);
 
             // Special cases
-            switch ($extension = strtolower(Input::extension())) {
+            switch ($extension = strtolower(Input::extension() || '')) {
                 case 'schema':
-                    return $model->getSchema();
+                    // Fetch schema from model
+                    if (is_callable([$model, 'getSchema'])) {
+                        return $model->getSchema();
+                    }
+                    // No schema available
+                    return null;
 
                 case '':
                     // Do nothing

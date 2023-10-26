@@ -4,9 +4,9 @@ namespace Anstech\Crud;
 
 use Anstech\Rest\Json\Schema;
 use Fuel\Core\DB;
-use Fuel\Core\Inflector;
+//use Fuel\Core\Inflector;
 use Fuel\Core\Input;
-use Fuel\Core\Module;
+//use Fuel\Core\Module;
 use Fuel\Core\Validation;
 
 /**
@@ -16,7 +16,7 @@ class Rest
 {
     protected $model = null;
 
-    public static function forge($resource, $apiController)
+    public static function forge($resource)
     {
         /*
         $namespaced_resource = false;
@@ -50,7 +50,7 @@ class Rest
             return $crud;
         }
 
-        return false;
+        return null;
     }
 
     public function getOne($id, $inputData = [])
@@ -230,7 +230,7 @@ class Rest
      *
      * @return array
      */
-    protected function cleanObject($object, $inputData = [], $removeFields = ['companyId'])
+    protected function cleanObject($object, $inputData = [], $removeFields = ['company_id'])
     {
         // Fields to remove / rename
         $fields = [
